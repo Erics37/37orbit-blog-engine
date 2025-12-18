@@ -15,8 +15,9 @@ const Home: React.FC = () => {
         const data = await strapiService.getArticles();
         setArticles(data);
       } catch (err) {
-        setError('Connection to deep space lost. Check your Strapi endpoint.');
-      } finally {
+        console.error('Failed to load articles:', err);
+        setArticles([]);     // 当作“暂无内容”
+        } finally {
         setLoading(false);
       }
     };

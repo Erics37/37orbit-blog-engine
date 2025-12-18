@@ -24,17 +24,21 @@ interface StrapiResponse<T> {
  */
 export const strapiService = {
   async getArticles() {
-    const res = await fetch(
-      `${API_URL}/api/articles?populate=*&sort=publishedAt:desc`
-    );
+  const res = await fetch(
+    `${API_URL}/api/articles?populate=*&sort=publishedAt:desc`
+  );
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch articles: ${res.status}`);
+  // ❗ 只把真正的网络错误当异常
+  if (!res.ok) {
+    if (res.status === 404 || res.status === 403) {
+      return []; // 当作“暂时没有内容”
     }
+    throw new Error(`HTTP ${res.status}`);
+  }
 
-    const json: StrapiResponse<any> = await res.json();
-    return json.data;
-  },
+  const json = await res.json();
+  return json.data ?? [];
+},
 
   async getArticleByDocumentId(documentId: string) {
     const res = await fetch(
