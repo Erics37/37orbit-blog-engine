@@ -1,0 +1,53 @@
+
+import React from 'react';
+import { Article } from '../types';
+import { getMediaURL } from '../services/api';
+
+interface Props {
+  article: Article;
+}
+
+const ArticleCard: React.FC<Props> = ({ article }) => {
+  const imageUrl = getMediaURL(article.cover?.[0]?.url);
+  return (
+    <a href={`#/article/${article.documentId}`} 
+    className="article-card group">
+
+      <div className="aspect-[16/10] overflow-hidden relative">
+        <img 
+          src={imageUrl} 
+          alt={article.title}
+          className="w-full h-full object-cover 
+          transition-transform duration-700 
+          group-hover:scale-110
+          "
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] to-transparent opacity-60"></div>
+      </div>
+      
+      <div className="p-8">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-[10px] font-bold tracking-widest text-[#FF791B] uppercase px-2 py-1 bg-[#FF791B]/10 rounded border border-[#FF791B]/20">
+            ARTICLE
+          </span>
+          <span className="text-[10px] text-gray-500 font-mono">
+            {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </span>
+        </div>
+        
+        <h3 className="text-2xl font-bold text-white group-hover:text-[#FF791B] transition-colors leading-tight mb-4">
+          {article.title}
+        </h3>
+        
+        <div className="flex items-center gap-2 text-sm text-gray-400 font-medium">
+          <span>Read Mission Briefing</span>
+          <svg className="w-4 h-4 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </div>
+      </div>
+    </a>
+  );
+};
+
+export default ArticleCard;
