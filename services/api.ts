@@ -1,7 +1,10 @@
 // src/services/api.ts
 
-const API_URL = import.meta.env.VITE_STRAPI_API_URL || 'http://localhost:1337';
+const API_URL = import.meta.env.VITE_STRAPI_API_URL as string;
 
+if (!API_URL) {
+  throw new Error('VITE_STRAPI_API_URL is not defined');
+}
 /**
  * Convert Strapi media relative URL to absolute URL
  */
