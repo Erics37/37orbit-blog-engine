@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         host: '0.0.0.0',
-        allowedHosts: ['api.37orbit.com'],
+        allowedHosts: ['api.37orbit.com','37orbit.com','.37orbit.com'],
       },
       plugins: [react()],
       define: {
