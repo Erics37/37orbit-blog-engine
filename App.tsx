@@ -6,6 +6,11 @@ import ArticleDetail from './pages/ArticleDetail';
 
 const App: React.FC = () => {
   const [route, setRoute] = useState(window.location.hash || '#/');
+  // Force hash-router to always run at site root
+  if (window.location.pathname !== '/') {
+    const hash = window.location.hash || '#/';
+    window.location.replace(`/${hash}`);
+  }
 
   useEffect(() => {
     const handleHashChange = () => {
