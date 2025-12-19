@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { strapiService, getMediaURL } from '../services/api';
 import { Article } from '../types';
 
+
 const ArticleDetail: React.FC = () => {
+  const [progress, setProgress] = useState(0);
   const hash = window.location.hash;
   const raw = hash.split('/article/')[1] || '';
   const documentId = decodeURIComponent(raw.split('?')[0]).replace(/\/+$/, '');
@@ -35,10 +37,39 @@ const ArticleDetail: React.FC = () => {
     loadArticle();
   }, [documentId]);
 
+  useEffect(() => {
+  const handleScroll = () => {
+    const scrollTop = window.scrollY;
+    const docHeight =
+      document.documentElement.scrollHeight - window.innerHeight;
+
+    if (docHeight <= 0) {
+      setProgress(0);
+      return;
+    }
+
+    const scrolled = (scrollTop / docHeight) * 100;
+      setProgress(Math.min(100, Math.max(0, scrolled)));
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // 初始化
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []); 
+
   if (loading) return <div className="py-40 text-center font-mono animate-pulse">DECRYPTING PACKET...</div>;
   if (error || !article) return <div className="py-40 text-center text-red-400">Article not found in current sector.</div>;
 
   return (
+    <>
+    {/* Reading Progress Bar */}
+    <div className="fixed top-0 left-0 w-full h-[2px] z-50 bg-transparent">
+      <div
+        className="h-full bg-[#FF791B] transition-[width] duration-150 ease-out"
+        style={{ width: `${progress}%` }}
+      />
+    </div>
     <article className="max-w-4xl mx-auto">
       <div className="mb-12">
         <div className="flex items-center gap-4 mb-6">
@@ -90,9 +121,14 @@ const ArticleDetail: React.FC = () => {
                <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
             </button>
          </div>
-         <span className="text-xs font-mono text-gray-600">ID: {article.documentId}</span>
+         {import.meta.env.DEV && (
+          <span className="text-xs font-mono text-gray-600">
+            ID: {article.documentId}
+          </span>
+        )}
       </div>
     </article>
+    </>
   );
 };
 
