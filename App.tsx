@@ -1,4 +1,4 @@
-
+import Annual2025 from './pages/annual2025';
 import React, { useState, useEffect } from 'react';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -27,6 +27,10 @@ const App: React.FC = () => {
     if (route.startsWith('#/article/')) {
       const slug = route.replace('#/article/', '');
       return <ArticleDetail slug={slug} />;
+    }
+
+    if (route === '#/annual/2025') {
+      return <Annual2025 />;
     }
     
     switch (route) {

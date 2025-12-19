@@ -14,3 +14,18 @@ export interface Article {
   publishedAt: string;
   cover?: Media[];
 }
+
+export interface AnnualArticle {
+  id: number;
+  date: string;      // e.g. '2024-01-12'
+  title: string;
+  excerpt: string;
+  content: string;   // HTML string
+}
+
+export interface TimelineNodeProps {
+  article: AnnualArticle;
+  isActive: boolean;
+  isExpanded: boolean;
+  onExpand: () => void;
+}
