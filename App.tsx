@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import ArticleDetail from './pages/ArticleDetail';
 
+//
 const App: React.FC = () => {
   const [route, setRoute] = useState(window.location.hash || '#/');
   // Force hash-router to always run at site root
