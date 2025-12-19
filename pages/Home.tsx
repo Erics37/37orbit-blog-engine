@@ -44,6 +44,7 @@ const Home: React.FC = () => {
   }
 
   return (
+    
     <div>
       <section className="mb-20">
         <h1 className="text-5xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter">
@@ -56,6 +57,28 @@ const Home: React.FC = () => {
           非专业摄像 | 舞萌·音击·中二 | 乌龟 | 1.5L自吸发动机<br/> 
           回复TD退订 
         </p>
+        <div className="mt-10">
+  <button
+    onClick={() => {
+      window.location.hash = '#/annual/2025';
+    }}
+    className="
+      px-6
+      py-3
+      border
+      border-white/20
+      text-white/60
+      text-xs
+      tracking-[0.35em]
+      uppercase
+      hover:border-[#FF791B]
+      hover:text-[#FF791B]
+      transition-all
+    "
+  >
+    Annual Review 2025 →
+  </button>
+</div>
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
