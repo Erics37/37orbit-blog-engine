@@ -1,4 +1,4 @@
-
+import SocialLinks from './SocialLinks';
 import React from 'react';
 const FEATURES = {
   NAV_ITEMS: false,
@@ -56,7 +56,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {children}
       </main>
 
-      <footer className="border-t border-white/5 py-12 bg-[#0d0d0f]">
+      <footer className="relative border-t border-white/5 py-12 bg-[#0d0d0f]">
+        {/* Social links: 紧贴 footer 上边线 */}
+        <div className="absolute -top-12 left-3">
+          <SocialLinks />
+        </div>
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-gray-500 text-sm">
             © {new Date().getFullYear()} 37ORBIT. Do Something.

@@ -1,4 +1,4 @@
-
+import SocialLinks from '../components/SocialLinks';
 import React, { useEffect, useState } from 'react';
 import { strapiService } from '../services/api';
 import { Article } from '../types';
@@ -44,8 +44,7 @@ const Home: React.FC = () => {
   }
 
   return (
-    
-    <div>
+    <div className="relative min-h-screen">
       <section className="mb-20">
         <h1 className="text-5xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter">
           S属性大爆发<br/>
