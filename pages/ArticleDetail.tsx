@@ -13,6 +13,8 @@ const ArticleDetail: React.FC = () => {
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
 
   useEffect(() => {
     if (!documentId) {
@@ -93,8 +95,13 @@ const ArticleDetail: React.FC = () => {
 
       <div className="rounded-3xl overflow-hidden mb-16 border border-white/5 shadow-2xl">
         <img 
-        src={getMediaURL(article.cover?.[0]?.url)} 
-        alt={article.title} 
+          src={getMediaURL(article.cover?.[0]?.url)} 
+          alt={article.title}
+          className="cursor-zoom-in"
+          onClick={() => {
+            const url = getMediaURL(article.cover?.[0]?.url);
+            if (url) setPreviewImage(url);
+          }}
         />
       </div>
 
@@ -113,6 +120,53 @@ const ArticleDetail: React.FC = () => {
         })}
       </div>
     </article>
+    {previewImage && (
+  <div
+    className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
+    onClick={() => setPreviewImage(null)}
+  >
+    {/* 以图片为参照的容器 */}
+    <div
+      className="relative"
+      onClick={(e) => e.stopPropagation()} // 防止点到容器就关掉
+    >
+      {/* 关闭按钮：贴在图片左上角 */}
+      <button
+        aria-label="Close image preview"
+        className="
+          absolute
+          -top-3
+          -left-3
+          z-[110]
+          w-10
+          h-10
+          rounded-full
+          bg-black/60
+          backdrop-blur-sm
+          flex
+          items-center
+          justify-center
+          text-2xl
+          leading-none
+          transition
+          hover:bg-black/80
+        "
+        style={{ color: '#FF791B' }}
+        onClick={() => setPreviewImage(null)}
+      >
+        ×
+      </button>
+
+      {/* 放大图片 */}
+      <img
+        src={previewImage}
+        alt="Preview"
+        className="max-w-[90vw] max-h-[90vh] object-contain cursor-zoom-out"
+      />
+    </div>
+  </div>
+)}
+
     </>
   );
 };
