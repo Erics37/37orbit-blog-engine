@@ -145,7 +145,7 @@ const Annual2025: React.FC = () => {
 
 
   return (
-  <div className="relative bg-black min-h-screen overflow-hidden">
+  <div className="relative bg-black min-h-[100svh] overflow-hidden">
 
     {/* ===== 顶部区域：返回按钮 + 年度标题条 ===== */}
     <section className="relative pt-24 pb-24 flex flex-col items-center gap-8">

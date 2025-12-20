@@ -13,9 +13,11 @@ const navItems = [
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="min-h-screen flex flex-col selection:bg-[#FF791B] selection:text-white">
+    <div
+  className="min-h-screen flex flex-col selection:bg-[#FF791B] selection:text-white"
+  style={{ backgroundColor: '#0a0a0c' }} >
       {/* Space Background Elements */}
-      <div className="hidden md:block fixed inset-0 pointer-events-none overflow-hidden -z-10">
+      <div className="hidden md:block fixed inset-0 pointer-events-none overflow-hidden -z-10 will-change-transform">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#FF791B]/5 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-[#FF791B]/10 rounded-full blur-[100px]"></div>
       </div>

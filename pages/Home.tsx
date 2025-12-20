@@ -36,7 +36,7 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-[100svh]">
       {/* ===== Hero 区域：始终存在，不卸载 ===== */}
       <section className="mb-20">
         <h1 className="text-5xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter">
