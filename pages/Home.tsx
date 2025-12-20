@@ -24,14 +24,6 @@ const Home: React.FC = () => {
     loadContent();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-40 gap-4">
-        <div className="w-12 h-12 border-4 border-[#FF791B]/20 border-t-[#FF791B] rounded-full animate-spin"></div>
-        <p className="text-gray-500 animate-pulse font-mono text-sm tracking-widest">ESTABLISHING ORBIT...</p>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -45,6 +37,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="relative min-h-screen">
+      {/* ===== Hero 区域：始终存在，不卸载 ===== */}
       <section className="mb-20">
         <h1 className="text-5xl md:text-8xl font-black mb-8 leading-[0.9] tracking-tighter">
           S属性大爆发<br/>
@@ -81,16 +74,31 @@ const Home: React.FC = () => {
       </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {articles.length > 0 ? (
-          articles.map((article) => (
-            <ArticleCard key={article.id} article={article} />
-          ))
-        ) : (
-          <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl">
-            <p className="text-gray-600">No signals detected yet. Deploy content in Strapi to begin.</p>
-          </div>
-        )}
-      </div>
+  {loading && (
+    <>
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="h-64 rounded-2xl bg-white/5 animate-pulse"
+        />
+      ))}
+    </>
+  )}
+
+  {!loading && articles.length > 0 && (
+    articles.map((article) => (
+      <ArticleCard key={article.id} article={article} />
+    ))
+  )}
+
+  {!loading && articles.length === 0 && (
+    <div className="col-span-full py-20 text-center border-2 border-dashed border-white/5 rounded-3xl">
+      <p className="text-gray-600">
+        No signals detected yet. Deploy content in Strapi to begin.
+      </p>
+    </div>
+  )}
+</div>
     </div>
   );
 };
