@@ -16,6 +16,16 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <div
   className="min-h-screen flex flex-col selection:bg-[#FF791B] selection:text-white"
   style={{ backgroundColor: '#0a0a0c' }} >
+      {/* <div className="
+        fixed
+        left -6
+        bottom-24
+        left-6
+        z-40
+        md:block
+        ">
+        <SocialLinks />
+      </div> */}
       {/* Space Background Elements */}
       <div className="hidden md:block fixed inset-0 pointer-events-none overflow-hidden -z-10 will-change-transform">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#FF791B]/5 rounded-full blur-[120px]"></div>
@@ -54,15 +64,24 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </nav>
       </header>
 
-      <main className="flex-grow max-w-7xl mx-auto px-6 py-12 w-full">
+      <main className="relative flex-grow max-w-7xl mx-auto px-6 py-12 pb-24 w-full">
+        <div
+          className="
+          absolute
+          left-6
+          bottom-1
+          "
+          >
+          <SocialLinks />
+        </div>
         {children}
       </main>
 
       <footer className="relative border-t border-white/5 py-12 bg-[#0d0d0f]">
         {/* Social links: 紧贴 footer 上边线 */}
-        <div className="absolute -top-12 left-3">
+        {/* <div className="absolute -top-12 left-3">
           <SocialLinks />
-        </div>
+        </div> */}
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-gray-500 text-sm">
             © {new Date().getFullYear()} 37ORBIT. Do Something.

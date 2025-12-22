@@ -3,6 +3,21 @@ import React, { useEffect, useState } from 'react';
 import { strapiService, getMediaURL } from '../services/api';
 import { Article } from '../types';
 
+const estimateReadTime = (blocks: any[]) => {
+  if (!Array.isArray(blocks)) return 1;
+
+  const text = blocks
+    .filter(b => b.type === 'paragraph')
+    .map(b => b.children?.map((c: any) => c.text).join('') ?? '')
+    .join('');
+
+  const charCount = text.length;
+
+  // 粗略估算：400 字 / 分钟
+  const minutes = Math.max(1, Math.round(charCount / 400));
+
+  return minutes;
+};
 
 const ArticleDetail: React.FC = () => {
   const [progress, setProgress] = useState(0);
@@ -62,7 +77,7 @@ const ArticleDetail: React.FC = () => {
 
   if (loading) return <div className="py-40 text-center font-mono animate-pulse">DECRYPTING PACKET...</div>;
   if (error || !article) return <div className="py-40 text-center text-red-400">Article not found in current sector.</div>;
-
+  const readMinutes = estimateReadTime(article.context);
   return (
     <>
     {/* Reading Progress Bar */}
@@ -73,7 +88,7 @@ const ArticleDetail: React.FC = () => {
       />
     </div>
     <article className="max-w-4xl mx-auto">
-      <div className="mb-12">
+      <div className="mb-8 md:mb-10">
         <div className="flex items-center gap-4 mb-6">
           <a href="#/" className="text-xs font-bold text-[#FF791B] hover:underline">← RETURN TO ORBIT</a>
           <div className="h-px bg-white/10 flex-grow"></div>
@@ -89,11 +104,11 @@ const ArticleDetail: React.FC = () => {
             <span>Published {new Date(article.publishedAt).toLocaleDateString()}</span>
           </div>
           <span>•</span>
-          <span>5 min read</span>
+          <span>{readMinutes} min read</span>
         </div>
       </div>
 
-      <div className="rounded-3xl overflow-hidden mb-16 border border-white/5 shadow-2xl">
+      <div className="rounded-3xl overflow-hidden mb-10 md:mb-12 border border-white/5 shadow-2xl">
         <img 
           src={getMediaURL(article.cover?.[0]?.url)} 
           alt={article.title}
@@ -106,6 +121,7 @@ const ArticleDetail: React.FC = () => {
       </div>
 
       {/* Article Content (Strapi v5 Blocks) */}
+      <div className="h-px bg-white/5 mb-8"></div>
       <div className="prose prose-invert max-w-none text-gray-300">
         {Array.isArray(article.context) &&
         article.context.map((block: any, i: number) => {
