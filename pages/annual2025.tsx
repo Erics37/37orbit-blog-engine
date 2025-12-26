@@ -2,6 +2,8 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { annual2025, type AnnualArticle } from '../data/annual2025';
+import MarkdownRenderer from '../components/MarkdownRenderer';
+
 
 type NodeProps = {
   article: AnnualArticle;
@@ -19,7 +21,7 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
   onBecomeActive,
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const inView = useInView(ref, { margin: '-80% 0px -80% 0px'});
+  const inView = useInView(ref, { margin: '-80% 0px -80% 0px' });
 
   // 进入视口就把它设为 active（用于高亮、淡入）
   useEffect(() => {
@@ -43,11 +45,10 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
   return (
     <div
       ref={ref}
-      className={`relative min-h-[100vh] transition-opacity duration-700 ${
-        isActive ? 'opacity-100' : 'opacity-100 hover:opacity-100'
-      }`}
+      className={`relative min-h-[60vh] transition-opacity duration-700 ${isActive ? 'opacity-100' : 'opacity-100 hover:opacity-100'
+        }`}
     >
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_80px_1fr] items-start pt-[22vh] pb-[22vh] h-full">
+      <div className="grid grid-cols-1 md:grid-cols-[200px_80px_1fr] items-start pt-[10vh] pb-[10vh] h-full max-w-[1600px] mx-auto">
         {/* Left: Date (Desktop) */}
         <div className="hidden md:flex justify-end items-start pr-12 pt-1">
           <motion.span
@@ -80,6 +81,7 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
         {/* Right: Content */}
         <div className="px-8 md:px-0 md:pl-8 z-20">
           <motion.div
+            layout
             initial={false}
             animate={{ opacity: 1, x: 0 }} // 关键：不要把非 active 动画到 0，否则会“看起来没渲染”
             transition={{ duration: 0.6, ease: 'easeOut' }}
@@ -90,13 +92,15 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
               {displayDate}
             </span>
 
-            <h2 className="text-4xl md:text-6xl font-serif text-white mb-6 leading-tight">
+            <h2 className="text-2xl md:text-3xl font-serif text-white/50 mb-4 leading-tight">
               {article.title}
             </h2>
 
-            <p className="text-white/60 text-lg md:text-xl font-light mb-8 leading-relaxed">
-              {article.excerpt}
-            </p>
+            {article.excerpt && (
+              <p className="text-white/60 text-lg md:text-xl font-light mb-8 leading-relaxed">
+                {article.excerpt}
+              </p>
+            )}
 
             <button
               onClick={onExpand}
@@ -116,17 +120,15 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
             <AnimatePresence>
               {isExpanded && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0, y: 16 }}
-                  animate={{ opacity: 1, height: 'auto', y: 0 }}
-                  exit={{ opacity: 0, height: 0, y: 16 }}
-                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  layout
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
                   className="overflow-hidden bg-black/40 backdrop-blur-[1px] rounded-sm p-4 -ml-4"
                 >
                   <div className="prose prose-invert max-w-none text-white/70 leading-relaxed space-y-8 pb-12 text-lg font-light border-l border-[#FF791B]/20 pl-6">
-                    <div
-                      className="prose prose-invert max-w-none"
-                      dangerouslySetInnerHTML={{ __html: article.content }}
-                    />
+                    <MarkdownRenderer content={article.content} />
                   </div>
                 </motion.div>
               )}
@@ -141,20 +143,20 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
 const Annual2025: React.FC = () => {
   const [activeId, setActiveId] = useState<number>(annual2025[0]?.id ?? 0);
   const [expandedId, setExpandedId] = useState<number | null>(null);
-  const isComingSoon = true;
+
 
 
   return (
-  <div className="relative bg-black min-h-[100svh] overflow-hidden">
+    <div className="relative bg-black min-h-[100svh] overflow-hidden">
 
-    {/* ===== 顶部区域：返回按钮 + 年度标题条 ===== */}
-    <section className="relative pt-24 pb-24 flex flex-col items-center gap-8">
-    {/* 返回主页按钮 */}
+      {/* ===== 顶部区域：返回按钮 + 年度标题条 ===== */}
+      <section className="relative pt-24 pb-24 flex flex-col items-center gap-8">
+        {/* 返回主页按钮 */}
         <button
-            onClick={() => {
+          onClick={() => {
             window.location.hash = '#/';
-            }}
-            className="
+          }}
+          className="
                 text-xs
                 tracking-[0.35em]
                 uppercase
@@ -162,15 +164,15 @@ const Annual2025: React.FC = () => {
                 hover:text-[#FF791B]
                 transition-colors
                 "
-            >
-            ← Back to Home
+        >
+          ← Back to Home
         </button>
-    </section>
-    
-    {/* ===== 年度标题条 ===== */}
-    <section className="relative pt-5 pb-20 flex justify-center">
+      </section>
+
+      {/* ===== 年度标题条 ===== */}
+      <section className="relative pt-5 pb-20 flex justify-center">
         <div
-        className="
+          className="
             backdrop-blur-xl
             bg-white/5
             border
@@ -181,68 +183,53 @@ const Annual2025: React.FC = () => {
             max-w-[720px]
             w-[90%]
             ">
-            <div className="flex items-center justify-between">
-                <h1 className="text-4xl md:text-4xl 
+          <div className="flex items-center justify-between">
+            <h1 className="text-4xl md:text-4xl 
                 font-mono text-white tracking-tight">
-                    Year <span className="text-[#FF791B]">2025</span>
-                </h1>
+              Year <span className="text-[#FF791B]">2025</span>
+            </h1>
 
-                <span className="text-xs tracking-[0.35em] uppercase text-white/40">
-                    Annual Timeline
-                </span>
-            </div>
+            <span className="text-xs tracking-[0.35em] uppercase text-white/40">
+              Annual Timeline
+            </span>
+          </div>
         </div>
-    </section>
+      </section>
 
-    {/* ===== 中央：敬请期待 / Coming Soon ===== */}
-    <div className="flex items-center justify-center h-[100vh]">
-      <div className="text-center">
-        <p className="text-[35px] tracking-[0.3em] uppercase text-white/55 mb-6">
-          Coming Soon<br/>
-        </p>
-
-        <p className="text-white/40 max-w-md mx-auto leading-relaxed">
-            ミラクル STAY TUNE<br/>
-        </p>
-      </div>
-    </div>
-
-    {/* 中轴线 （暂时停用，写完内容后再放开）*/}
-    {/*
-    <div
-      className="
-        pointer-events-none
-        absolute
-        left-1/2
-        top-0
-        -translate-x-1/2
-        w-px
-        h-full
-        z-10
-        bg-gradient-to-b
-        from-transparent
-        via-white/20
-        to-transparent
-      "
-    />
-
-    {annual2025.map((article) => (
-      <AnnualTimelineNode
-        key={article.id}
-        article={article}
-        isActive={article.id === activeId}
-        isExpanded={article.id === expandedId}
-        onBecomeActive={() => setActiveId(article.id)}
-        onExpand={() =>
-          setExpandedId(prev =>
-            prev === article.id ? null : article.id
-          )
-        }
+      {/* 中轴线 */}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          left-1/2
+          top-0
+          -translate-x-1/2
+          w-px
+          h-full
+          z-10
+          bg-gradient-to-b
+          from-transparent
+          via-white/20
+          to-transparent
+        "
       />
-    ))}
-      */}
-  </div>
-);
+
+      {annual2025.map((article) => (
+        <AnnualTimelineNode
+          key={article.id}
+          article={article}
+          isActive={article.id === activeId}
+          isExpanded={article.id === expandedId}
+          onBecomeActive={() => setActiveId(article.id)}
+          onExpand={() =>
+            setExpandedId(prev =>
+              prev === article.id ? null : article.id
+            )
+          }
+        />
+      ))}
+    </div>
+  );
 };
 
 export default Annual2025;
