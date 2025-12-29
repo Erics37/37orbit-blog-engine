@@ -16,7 +16,7 @@ const TimelineNode: React.FC<TimelineNodeProps> = ({ article, isActive, onExpand
     }
   }, [isExpanded]);
 
-  const displayDate = new Date(article.date).toLocaleDateString('en-US', {
+  const displayDate = article.label?.trim() || new Date(article.date).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric'
   });

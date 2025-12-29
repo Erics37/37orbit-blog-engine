@@ -1,5 +1,4 @@
 import React from 'react';
-import SiteLogo from '../assets/logo/Lumkfs-Logo.png';
 
 const iconClass =
   'w-5 h-5 text-white/50 group-hover:text-[#FF791B] transition-colors';
@@ -41,19 +40,21 @@ const SocialLinks: React.FC = () => {
         </svg>
       </a>
 
-      {/* Personal Website */}
+      {/* GitHub */}
       <a
-        href="https://lumkfs.cn"
+        href="https://github.com/Erics37"
         target="_blank"
         rel="noopener noreferrer"
         className="group p-3 bg-white/5 rounded-full hover:bg-[#FF791B]/20 transition-all"
-        aria-label="Website"
+        aria-label="GitHub"
       >
-        <img
-          src={SiteLogo}
-          alt="Website"
-          className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity"
-        />
+        <svg
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          className={iconClass}
+        >
+          <path d="M12 .5a11.5 11.5 0 0 0-3.64 22.4c.58.11.79-.25.79-.55v-1.9c-3.22.7-3.9-1.55-3.9-1.55-.53-1.36-1.3-1.73-1.3-1.73-1.07-.73.08-.72.08-.72 1.18.09 1.8 1.2 1.8 1.2 1.05 1.8 2.76 1.28 3.43.98.11-.77.41-1.28.75-1.57-2.57-.29-5.27-1.28-5.27-5.7 0-1.26.45-2.3 1.2-3.11-.12-.3-.52-1.5.11-3.13 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.5 3.17-1.18 3.17-1.18.64 1.63.24 2.83.12 3.13.75.81 1.19 1.85 1.19 3.1 0 4.44-2.71 5.4-5.29 5.69.42.36.8 1.07.8 2.17v3.21c0 .3.21.66.8.55A11.5 11.5 0 0 0 12 .5Z" />
+        </svg>
       </a>
     </div>
   );

@@ -3,9 +3,21 @@ import fullContent from '../content/annual/2025/2025annual.md?raw';
 export type AnnualArticle = {
   id: number;
   date: string;
+  label: string;
   title: string;
   excerpt: string;
   content: string;
+  imageUrls?: string[];
+};
+
+const extractImageUrls = (md: string): string[] => {
+  const urls: string[] = [];
+  const regex = /!\[[^\]]*?\]\((.*?)\)/g;
+  let match;
+  while ((match = regex.exec(md)) !== null) {
+    if (match[1]) urls.push(match[1]);
+  }
+  return urls;
 };
 
 const parseMarkdownSections = (raw: string): AnnualArticle[] => {
@@ -16,6 +28,7 @@ const parseMarkdownSections = (raw: string): AnnualArticle[] => {
   return sections.flatMap((section) => {
     const lines = section.split('\n');
     const sectionTitle = lines[0].trim(); // e.g., "Jan", "2025"
+    const label = sectionTitle;
     const sectionBody = lines.slice(1).join('\n');
 
     // Month mapping
@@ -56,9 +69,11 @@ const parseMarkdownSections = (raw: string): AnnualArticle[] => {
       articles.push({
         id: globalId++,
         date: dateStr,
+        label,
         title: sectionTitle,
         excerpt: rawText || sectionTitle, // Use full text if short, or handled by UI
-        content: introContent
+        content: introContent,
+        imageUrls: extractImageUrls(introContent)
       });
     }
 
@@ -88,9 +103,11 @@ const parseMarkdownSections = (raw: string): AnnualArticle[] => {
       articles.push({
         id: globalId++,
         date: dateStr,
+        label,
         title: h3Title,
         excerpt: '', // H3 Title is already visible as the main title, avoiding duplication.
-        content: body
+        content: body,
+        imageUrls: extractImageUrls(body)
       });
     }
 

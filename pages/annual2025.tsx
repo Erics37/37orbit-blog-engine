@@ -11,6 +11,7 @@ type NodeProps = {
   isExpanded: boolean;
   onExpand: () => void;
   onBecomeActive: () => void;
+  onImageClick?: (src: string, alt?: string) => void;
 };
 
 const AnnualTimelineNode: React.FC<NodeProps> = ({
@@ -19,28 +20,48 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
   isExpanded,
   onExpand,
   onBecomeActive,
+  onImageClick,
 }) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const inView = useInView(ref, { margin: '-80% 0px -80% 0px' });
+  const inView = useInView(ref, { margin: '-35% 0px -35% 0px', amount: 0.4, once: false });
+  const preloadedRef = useRef(false);
 
   // 进入视口就把它设为 active（用于高亮、淡入）
   useEffect(() => {
     if (inView) onBecomeActive();
   }, [inView, onBecomeActive]);
 
+  // 预加载图片，减少展开时的卡顿
+  useEffect(() => {
+    if ((isActive || isExpanded) && !preloadedRef.current && article.imageUrls?.length) {
+      preloadedRef.current = true;
+      article.imageUrls.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+      });
+    }
+  }, [isActive, isExpanded, article.imageUrls]);
+
   // 展开时平滑滚动到合适位置
   useEffect(() => {
     if (!isExpanded || !ref.current) return;
-    const yOffset = -160; // 顶部导航/留白偏移
-    const y = ref.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
-    window.scrollTo({ top: y, behavior: 'smooth' });
+    const rect = ref.current.getBoundingClientRect();
+    const viewportTopGap = 100;
+    const isAbove = rect.top < viewportTopGap;
+    // 只有当卡片头部被卷出屏幕时才滚动，避免在底部展开时被强制顶上去
+    if (isAbove) {
+      const yOffset = -140; // 顶部导航/留白偏移
+      const y = rect.top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
   }, [isExpanded]);
 
-  const displayDate = useMemo(() => {
+  const timelineLabel = useMemo(() => {
+    if (article.label?.trim()) return article.label.trim();
     const d = new Date(article.date);
     // 只展示月日，你也可以改成 year-month-day
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  }, [article.date]);
+    return d.toLocaleDateString('en-US', { month: 'short' });
+  }, [article.label, article.date]);
 
   return (
     <div
@@ -53,10 +74,9 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
         <div className="hidden md:flex justify-end items-start pr-12 pt-1">
           <motion.span
             initial={false}
-            animate={{ color: isActive ? '#FF791B' : 'rgba(255,255,255,0.12)' }}
-            className="font-medium tracking-[0.4em] uppercase text-[10px] sticky top-1/2"
+            className="font-medium tracking-[0.4em] uppercase text-[10px] sticky top-1/2 text-[#FF791B]"
           >
-            {displayDate}
+            {timelineLabel}
           </motion.span>
         </div>
 
@@ -79,17 +99,16 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
         </div>
 
         {/* Right: Content */}
-        <div className="px-8 md:px-0 md:pl-8 z-20">
+        <div className="px-8 md:px-0 md:pl-8 z-20 flex flex-col gap-6">
           <motion.div
-            layout
             initial={false}
-            animate={{ opacity: 1, x: 0 }} // 关键：不要把非 active 动画到 0，否则会“看起来没渲染”
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="max-w-xl"
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.2, ease: 'linear' }}
+            className="max-w-xl md:sticky md:top-24"
           >
             {/* Mobile date */}
             <span className="md:hidden text-[#FF791B] font-medium tracking-widest uppercase text-xs mb-4 block">
-              {displayDate}
+              {timelineLabel}
             </span>
 
             <h2 className="text-2xl md:text-3xl font-serif text-white/50 mb-4 leading-tight">
@@ -104,7 +123,7 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
 
             <button
               onClick={onExpand}
-              className="group flex items-center gap-3 text-white/40 hover:text-[#FF791B] transition-all duration-300 mb-8"
+              className="group flex items-center gap-3 text-white/40 hover:text-[#FF791B] transition-all duration-300 mb-2"
             >
               <span className="text-xs tracking-[0.3em] uppercase">
                 {isExpanded ? 'Collapse' : 'Explore Deeply'}
@@ -116,24 +135,27 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 border-t border-r border-current rotate-45" />
               </motion.div>
             </button>
-
-            <AnimatePresence>
-              {isExpanded && (
-                <motion.div
-                  layout
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="overflow-hidden bg-black/40 backdrop-blur-[1px] rounded-sm p-4 -ml-4"
-                >
-                  <div className="prose prose-invert max-w-none text-white/70 leading-relaxed space-y-8 pb-12 text-lg font-light border-l border-[#FF791B]/20 pl-6">
-                    <MarkdownRenderer content={article.content} />
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
           </motion.div>
+
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.div
+                layout="position"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="overflow-hidden bg-black/40 backdrop-blur-[1px] rounded-sm p-4 -ml-4"
+              >
+                <div className="prose prose-invert max-w-none text-white/70 leading-relaxed space-y-8 pb-12 text-lg font-light border-l border-[#FF791B]/20 pl-6 max-h-[70vh] overflow-y-auto pr-4">
+                  <MarkdownRenderer
+                    content={article.content}
+                    onImageClick={(src, alt) => onImageClick?.(src, alt)}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>
@@ -143,6 +165,26 @@ const AnnualTimelineNode: React.FC<NodeProps> = ({
 const Annual2025: React.FC = () => {
   const [activeId, setActiveId] = useState<number>(annual2025[0]?.id ?? 0);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [previewImage, setPreviewImage] = useState<{ src: string; alt?: string } | null>(null);
+  const preloadCacheRef = useRef<Set<string>>(new Set());
+
+  const preloadImages = (urls?: string[]) => {
+    if (!urls?.length) return;
+    urls.forEach((src) => {
+      if (!src) return;
+      if (preloadCacheRef.current.has(src)) return;
+      preloadCacheRef.current.add(src);
+      const img = new Image();
+      img.src = src;
+    });
+  };
+
+  // 预加载当前与下一个节点的图片，进一步减少展开卡顿
+  useEffect(() => {
+    const currentIndex = annual2025.findIndex((a) => a.id === activeId);
+    const targets = [annual2025[currentIndex], annual2025[currentIndex + 1]].filter(Boolean);
+    targets.forEach((a) => preloadImages(a.imageUrls));
+  }, [activeId]);
 
 
 
@@ -221,6 +263,7 @@ const Annual2025: React.FC = () => {
           isActive={article.id === activeId}
           isExpanded={article.id === expandedId}
           onBecomeActive={() => setActiveId(article.id)}
+          onImageClick={(src, alt) => setPreviewImage({ src, alt })}
           onExpand={() =>
             setExpandedId(prev =>
               prev === article.id ? null : article.id
@@ -228,6 +271,49 @@ const Annual2025: React.FC = () => {
           }
         />
       ))}
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-[120] bg-black/90 flex items-center justify-center"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div
+            className="relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              aria-label="Close image preview"
+              className="
+                absolute
+                -top-3
+                -left-3
+                z-[130]
+                w-10
+                h-10
+                rounded-full
+                bg-black/60
+                backdrop-blur-sm
+                flex
+                items-center
+                justify-center
+                text-2xl
+                leading-none
+                transition
+                hover:bg-black/80
+              "
+              style={{ color: '#FF791B' }}
+              onClick={() => setPreviewImage(null)}
+            >
+              ×
+            </button>
+            <img
+              src={previewImage.src}
+              alt={previewImage.alt || 'Preview'}
+              className="max-w-[90vw] max-h-[90vh] object-contain cursor-zoom-out"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

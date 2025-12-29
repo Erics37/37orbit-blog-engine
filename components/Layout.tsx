@@ -1,5 +1,6 @@
 import SocialLinks from './SocialLinks';
 import React from 'react';
+import SiteLogo from '../assets/logo/Lumkfs-Logo.png';
 const FEATURES = {
   NAV_ITEMS: false,
   COMMAND_CENTER: false,
@@ -73,6 +74,27 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           "
           >
           <SocialLinks />
+        </div>
+        <div
+          className="
+          absolute
+          right-6
+          bottom-1
+          "
+        >
+          <a
+            href="https://lumkfs.cn"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group p-3 bg-white/5 rounded-full hover:bg-[#FF791B]/20 transition-all flex items-center justify-center"
+            aria-label="MKFS"
+          >
+            <img
+              src={SiteLogo}
+              alt="MKFS"
+              className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity"
+            />
+          </a>
         </div>
         {children}
       </main>
